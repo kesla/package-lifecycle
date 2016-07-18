@@ -48,6 +48,40 @@ test('packageLifecycle() install', async t => {
   t.false(await fs.exists(join(__dirname, 'install')));
 });
 
+test('packageLifecycle() binding.gyp file + custom install script', async t => {
+  const {path: dir} = await tmp.dir();
+  await fs.writeFile(join(dir, 'binding.gyp'), '{}');
+  await fs.writeFile(join(dir, 'package.json'), JSON.stringify({
+    scripts: {
+      install: 'touch install'
+    }
+  }));
+
+  const {install} = await packageLifecycle({dir});
+
+  await install();
+  t.true(await fs.exists(join(dir, 'install')));
+  t.false(await fs.exists(join(__dirname, 'install')));
+});
+
+test('packageLifecycle(), binding.gyp file, no custom install script', async t => {
+  const {path: dir} = await tmp.dir();
+  await fs.writeFile(join(dir, 'binding.cc'), '');
+  await fs.writeFile(join(dir, 'binding.gyp'), `{
+    'targets': [{
+      'target_name': 'binding',
+      'sources': [ 'binding.cc' ]
+    }]
+  }`);
+  await fs.writeFile(join(dir, 'package.json'), JSON.stringify({}));
+
+  const {install} = await packageLifecycle({dir});
+
+  await install();
+  t.true(await fs.exists(join(dir, 'build/Release/binding.node')));
+  t.false(await fs.exists(join(__dirname, 'build')));
+});
+
 test('packageLifecycle(), postinstall', async t => {
   const {path: dir} = await tmp.dir();
   await fs.writeFile(join(dir, 'package.json'), JSON.stringify({
