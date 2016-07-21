@@ -9,9 +9,7 @@ test('packageLifecycle(), empty package.json', async t => {
   const {path: dir} = await tmp.dir();
   await fs.writeFile(join(dir, 'package.json'), '{}');
 
-  const {preinstall, install, postinstall} = await packageLifecycle({
-    dir, install: () => Promise.resolve(null)
-  });
+  const {preinstall, install, postinstall} = await packageLifecycle({dir});
 
   t.notThrows(preinstall());
   t.notThrows(install());
