@@ -1,6 +1,6 @@
 {
   "name": "package-lifecycle",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Handle package lifecycle events",
   "main": "dist/index.js",
   "scripts": {
